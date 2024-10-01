@@ -8,10 +8,6 @@
 
 #include <string>
 
-#include <algorithm>
-
-#include <deque>
-
 // Define DEBUG_MODE to enable or disable debug messages.
 #define DEBUG_MODE 1
 
@@ -26,15 +22,29 @@ void print_spaces(int spaces) {
         std::cout << " ";
 }
 
+
+
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+
 class fraction {
-    public: int get_numerator();
+    public: 
+    int get_numerator() const;
     fraction(); // sets numerator to 0 and denominator to 1
     fraction(int); // sets numerator to the paramamter and denominator to 1
     fraction(int, int); //sets the numerator and denominator to the paramaters
     fraction(const std::string & input); // sets the fraction to a string
     void reduce_fraction(); // reduces fraction to its simplest form.The function divides the numerator and denomitaor by the GCD.
-    int gcd_Euclidean(int, int); //helper function for the reduce_fraction. determinbes the Greatest Common Divisor of two integers.
-    friend int length(const fraction & ); //finds the length of the fraction using string stream; useful for printing the fraction in a matrix to calculate padding.
+    int gcd_Euclidean(int, int) const; //helper function for the reduce_fraction. determinbes the Greatest Common Divisor of two integers.
+    friend int length(const fraction &) ; //finds the length of the fraction using string stream; useful for printing the fraction in a matrix to calculate padding.
     friend std::string to_string(const fraction & );
 
     friend fraction operator + (const fraction & ,
@@ -68,42 +78,13 @@ class fraction {
         const fraction & );
     friend bool operator == (const fraction & , int);
 
-    friend std::vector <fraction> input_vector(int n, int m);
 
-    private: int numerator;
+    private: 
+    int numerator;
     int denominator;
 };
 
-std::vector <fraction>  input_vector(int n, int m){
-
-        int col1=10;
-
-        std::cout<< "┌";
-        print_spaces(m* col1);
-        std::cout<<"┐";
-        std::cout<<std::endl;
-        std::vector <fraction> vector_input; 
-
-    
-        for (int i=0; i<n;i++)
-        {
-            std::cout <<"|";
-            for (int j=0; j<m; j++)
-            {
-                fraction input;
-                std::cin>> input;
-                vector_input.push_back(input); 
-                int element_length= length(input);
-                print_spaces(col1-element_length);
-            }
-            std::cout <<"|";
-            std::cout<<std::endl;
-        }
-        return(vector_input);
-}
-
-
-int fraction::get_numerator() {
+int fraction::get_numerator() const {
     return numerator;
 }
 
@@ -116,7 +97,7 @@ fraction::fraction(int n): numerator(n), denominator(1) {}
 
 fraction::fraction(int n, int d): numerator(n), denominator(d) {
     if (denominator == 0) {
-        throw std::invalid_argument("Denominator cannot be zero");
+        exit(4);
     }
     reduce_fraction();
 }
@@ -128,18 +109,18 @@ fraction::fraction(const std::string & input) {
     if (ss >> numerator) {
         if (ss >> slash && slash == '/' && ss >> denominator) {
             if (denominator == 0) {
-                throw std::invalid_argument("Denominator cannot be zero");
+                exit(8);
             }
         } else {
             denominator = 1;
         }
     } else {
-        throw std::invalid_argument("Invalid input format");
+        exit(6);
     }
     reduce_fraction();
 }
 
-int fraction::gcd_Euclidean(int a, int b) {
+int fraction::gcd_Euclidean(int a, int b) const {
     while (b != 0) {
         int remainder = a % b;
         a = b;
@@ -165,10 +146,11 @@ void fraction::reduce_fraction() {
 }
 
 int length(const fraction & f) {
-    std::string p1 = std::to_string(f.numerator);
-    std::string p2 = std::to_string(f.denominator);
-    return (p1.length() + 1 + p2.length());
+    std::ostringstream oss;
+    oss << f;  // Use the overloaded << operator
+    return oss.str().length();  // Get the length of the resulting string
 }
+
 
 std::string to_string(const fraction & f) {
     return (std::to_string(f.numerator) + "/" + std::to_string(f.denominator));
@@ -188,7 +170,7 @@ std::istream & operator >> (std::istream & is, fraction & f) {
             f.denominator = 1;
         }
     } else {
-        throw std::invalid_argument("Invalid input format");
+        exit(6);
     }
     f.reduce_fraction();
     return is;
@@ -274,7 +256,7 @@ void operator *= (fraction & f1,
 fraction operator / (const fraction & f1,
     const fraction & f2) {
     if (f2.numerator == 0) {
-        throw std::invalid_argument("Division by zero");
+        exit(3);
     }
     fraction f3;
     f3.denominator = f1.denominator * f2.numerator;
@@ -333,70 +315,103 @@ bool operator == (const fraction & f1, int int1) {
     return (((f1.numerator == int1) && (f1.denominator == 1)));
 }
 
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+
 class vector2D {
 
     public:
     vector2D();
-
     vector2D(int, int);
-    vector2D(int, int, std::vector < fraction > elements);
-    vector2D(int, int, std::vector <std::vector <fraction> >vector_of_vectors );
+    vector2D(int, int,  std::vector < fraction > elements);
+    vector2D(const std::vector <std::vector <fraction> > &vector_of_vectors );
 
     bool is_empty();
 
-    int get_number_of_rows();
-    int get_number_of_columns();
+    int get_number_of_rows() const;
+    int get_number_of_columns() const;
 
-    void keep_rows(std::vector < int > rows_to_keep);
+    void set_number_of_rows(int);
+    void set_number_of_columns(int);
+
+    void keep_rows(const std::vector < int >& rows_to_keep);
     void keep_rows(int);
-    void keep_columns(std::vector < int > collumns_to_keep);
+    void keep_columns(const std::vector < int >& columns_to_keep);
     void flip();
     void row_swap(int, int);
-    void collumn_swap(int, int);
-    void multiply_row(int, fraction);
-    void divide_row(int, fraction);
-    void multiply_column(int, fraction);
-    void divide_column(int, fraction);
+    void column_swap(int, int);
+    void multiply_row(int, const fraction&);
+    void divide_row(int, const fraction&);
+    void multiply_column(int, const fraction&);
+    void divide_column(int, const fraction&);
 
-    void multiply_column_below(int, int, fraction);
+    fraction get_element(int, int) const;
 
-    fraction get_element(int, int);
+    std::vector < std::vector <fraction> > get_table() const;
+    void set_table(const std::vector < std::vector < fraction > > & new_table);
+    void set_element(int, int, const fraction&);
 
-    std::vector < std::vector <fraction> > get_table();
-    void set_table(std::vector < std::vector < fraction > > new_table);
-    void set_element(int, int, fraction);
-
-    friend std::ostream & operator << (std::ostream & os,
-    const vector2D & vector_2D);
+    friend std::ostream & operator << (std::ostream & os, const vector2D & vector_2D);
     void print_table();
 
     protected: int number_of_rows;
-    int number_of_collumns;
+    int number_of_columns;
 
-    private: std::vector < std::vector < fraction > > table;
+    private: 
+    std::vector < std::vector < fraction > > table;
 
 };
 
-vector2D::vector2D() {
+    vector2D::vector2D()
+        : number_of_rows(0),number_of_columns(0),table(std::vector<std::vector<fraction> >()) {
 
+        }
+        
+        vector2D::vector2D(int rows, int columns, std::vector < fraction > elements)
+    : number_of_rows(rows), number_of_columns(columns) {
+            table.resize(number_of_rows, std::vector<fraction>(number_of_columns)); // Initialize the 2D vector
+            for (int i = 0; i < number_of_rows; i++) {
+                for (int j = 0; j < number_of_columns; j++) {
+                    table[i][j] = elements.back();
+                    elements.pop_back();
+                }
+            }
 }
 
-vector2D::vector2D(int rows, int collumns, std::vector < fraction > elements) {
-    number_of_rows = rows;
-    number_of_collumns = collumns;
-    for (int i = 0; i < number_of_rows; i++) {
-        for (int j = 0; j < number_of_collumns; j++) {
-            table[i][j] = elements.back();
-            elements.pop_back();
-        }
+  void vector2D::set_number_of_rows(int rows){
+    number_of_rows=rows;
+  }
+
+    void vector2D:: set_number_of_columns(int cols){
+       number_of_columns=cols;
+    }
+
+void vector2D:: set_element(int row, int col, const fraction& new_value){
+ if (row >= 0 && row < number_of_rows && col >= 0 && col < number_of_columns) {
+        table[row][col] = new_value;
+    } else {
+        exit(6);
     }
 }
 
-vector2D :: vector2D(int n, int m, std:: vector < std::vector <fraction> > vector_of_vectors){
-    number_of_rows=n;
-    number_of_collumns=m;
-    table = vector_of_vectors;
+
+vector2D :: vector2D(const std:: vector <  std::vector <fraction> >& vector_of_vectors)
+    : number_of_rows(vector_of_vectors.size()), number_of_columns(vector_of_vectors[0].size()),table (vector_of_vectors){
+
 }
+
+vector2D:: vector2D(int rows, int cols)
+    : number_of_rows(rows), number_of_columns(cols) {
+    table.resize(rows, std::vector<fraction>(cols)); // Initialize the 2D vector with default fractions
+    }
 
 bool vector2D::is_empty() {
     if (table.empty()) {
@@ -405,44 +420,46 @@ bool vector2D::is_empty() {
     return false;
 }
 
-int vector2D::get_number_of_rows() {
+int vector2D::get_number_of_rows() const {
     return number_of_rows;
 }
 
-int vector2D::get_number_of_columns() {
-    return number_of_collumns;
+int vector2D::get_number_of_columns()const {
+    return number_of_columns;
 }
 
 
-void vector2D::keep_columns(std::vector < int > collumns_to_keep) {
+void vector2D::keep_columns(const std::vector < int > &columns_to_keep) {
     flip();
-    int collumns_kept = collumns_to_keep.size();
+    int columns_kept = columns_to_keep.size();
     int j = 0;
-    bool keep_collumn = false;
+    bool keep_column = false;
 
-    while (j < number_of_collumns) {
-        for (int k = 0; k < collumns_kept; k++) {
-            if (j == collumns_to_keep[k]) {
-                keep_collumn = true;
+    while (j < number_of_columns) {
+        for (int k = 0; k < columns_kept; k++) {
+            if (j == columns_to_keep[k]) {
+                keep_column = true;
                 break;
             }
         }
-        if (!keep_collumn) {
-            keep_collumn = false;
+        if (!keep_column) {
+            keep_column = false;
             table.erase(table.begin() + j);
         } else {
             j++;
         }
     }
     flip();
+
+    number_of_columns= columns_kept;
 }
 
-void vector2D::keep_rows(std::vector < int > rows_to_keep) {
+void vector2D::keep_rows(const std::vector < int > &rows_to_keep) {
 
     int rows_kept = rows_to_keep.size();
     int i = 0;
     bool keep_row = false;
-    while (i < number_of_collumns) {
+    while (i < number_of_rows) {
         for (int k = 0; k < rows_kept; k++) {
             if (i == rows_to_keep[k]) {
                 keep_row = true;
@@ -457,19 +474,20 @@ void vector2D::keep_rows(std::vector < int > rows_to_keep) {
             i++;
         }
     }
+    number_of_rows=rows_kept;
 }
 
 void vector2D::flip() {
-    vector2D flipped_vector2D(number_of_collumns, number_of_rows);
+    vector2D flipped_vector2D(number_of_columns, number_of_rows);
     //flip 2d vector to column-major order
     for (int i = 0; i < number_of_rows; i++) {
-        for (int j = 0; j < number_of_collumns; j++) {
+        for (int j = 0; j < number_of_columns; j++) {
             flipped_vector2D.table[j][i] = table[i][j];
         }
     }
     table = flipped_vector2D.table;
-    int temp = number_of_collumns;
-    number_of_collumns = number_of_rows;
+    int temp = number_of_columns;
+    number_of_columns = number_of_rows;
     number_of_rows = temp;
 }
 
@@ -490,8 +508,8 @@ void vector2D::row_swap(int a, int b) {
     return;
 }
 
-void vector2D::collumn_swap(int a, int b) {
-    if (a >= number_of_collumns || b >= number_of_collumns) {
+void vector2D::column_swap(int a, int b) {
+    if (a >= number_of_columns || b >= number_of_columns) {
         exit(1);
     } else if (a < 0 || b < 0) {
         exit(2);
@@ -507,8 +525,8 @@ void vector2D::collumn_swap(int a, int b) {
 
 }
 
-void vector2D::multiply_row(int a, fraction c) {
-    for (int j = 0; j < number_of_collumns; j++) {
+void vector2D::multiply_row(int a, const fraction &c) {
+    for (int j = 0; j < number_of_columns; j++) {
         if (table[a][j] == 0) {
             continue;
         }
@@ -517,7 +535,7 @@ void vector2D::multiply_row(int a, fraction c) {
     return;
 }
 
-void vector2D::multiply_column(int a, fraction c) {
+void vector2D::multiply_column(int a, const fraction &c) {
     for (int i = 0; i < number_of_rows; i++) {
         if (table[i][a].get_numerator()) {
             continue;
@@ -527,12 +545,12 @@ void vector2D::multiply_column(int a, fraction c) {
     return;
 }
 
-void vector2D::divide_row(int a, fraction c) {
-    if (c.get_numerator()) {
+void vector2D::divide_row(int a, const fraction &c ) {
+    if (!c.get_numerator()) {
         exit(3);
     }
 
-    for (int j = 0; j < number_of_collumns; j++) {
+    for (int j = 0; j < number_of_columns; j++) {
         if (table[a][j].get_numerator()) {
             continue;
         }
@@ -541,8 +559,8 @@ void vector2D::divide_row(int a, fraction c) {
     return;
 }
 
-void vector2D::divide_column(int a, fraction c) {
-    if (c.get_numerator()) {
+void vector2D::divide_column(int a, const fraction &c) {
+    if (!c.get_numerator()) {
         exit(3);
     }
 
@@ -555,23 +573,18 @@ void vector2D::divide_column(int a, fraction c) {
     return;
 }
 
-fraction vector2D::get_element(int n, int m) {
+fraction vector2D::get_element(int n, int m) const {
     return (table[n][m]);
 }
 
-std::vector < std::vector < fraction > > vector2D::get_table() {
+std::vector < std::vector < fraction > > vector2D::get_table() const{
     return (table);
 }
 
-void vector2D::set_table(std::vector < std::vector < fraction > > new_table) {
+void vector2D::set_table(const std::vector < std::vector < fraction > > &new_table) {
     table = new_table;
-
-}
-
-void vector2D::multiply_column_below(int col, int row, fraction constant) {
-    for (int i = row + 1; i < number_of_rows; i++) {
-        table[i][col] *= constant;
-    }
+    number_of_rows= new_table.size();
+    number_of_columns= new_table[0].size();
 }
 
 void vector2D::keep_rows(int how_many_rows) {
@@ -582,6 +595,7 @@ void vector2D::keep_rows(int how_many_rows) {
     for (int i = number_of_rows; i < how_many_rows; i--) {
         table.pop_back();
     }
+    number_of_rows= how_many_rows;
 }
 
 std::ostream & operator << (std::ostream & os,const vector2D & vector_2D) {
@@ -591,14 +605,14 @@ std::ostream & operator << (std::ostream & os,const vector2D & vector_2D) {
     os << "┐" << std::endl;
     for (int i = 0; i < vector_2D.number_of_rows; i++) {
         os << "|";
-        for (int j = 0; j < vector_2D.number_of_collumns; j++) {
+        for (int j = 0; j < vector_2D.number_of_columns; j++) {
             os << std::setw(col1) << std::left << vector_2D.table[i][j];
         }
         os << "|";
         os << std::endl;
     }
     os << "└";
-    for (int k = 0; k < vector_2D.number_of_collumns * col1; k++) {
+    for (int k = 0; k < vector_2D.number_of_columns * col1; k++) {
         os << " ";
     }
     os << "┘" << std::endl;
@@ -611,20 +625,20 @@ std::ostream & operator << (std::ostream & os,const vector2D & vector_2D) {
 void vector2D::print_table() {
     int col1 = 10;
     std::cout << "┌";
-    for (int k = 0; k < number_of_collumns * col1; k++) {
+    for (int k = 0; k < number_of_columns * col1; k++) {
         std::cout << " ";
     }
     std::cout << "┐" << std::endl;
     for (int i = 0; i < number_of_rows; i++) {
         std::cout << "|";
-        for (int j = 0; j < number_of_collumns; j++) {
+        for (int j = 0; j < number_of_columns; j++) {
             std::cout << std::setw(col1) << std::left << table[i][j];
         }
         std::cout << "|";
         std::cout << std::endl;
     }
     std::cout << "└";
-    for (int k = 0; k < number_of_collumns * col1; k++) {
+    for (int k = 0; k < number_of_columns * col1; k++) {
         std::cout << " ";
     }
     std::cout << "┘" << std::endl;
@@ -632,73 +646,102 @@ void vector2D::print_table() {
 
 }
 
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
+//********************************************************************************************************* */
 
 class matrix: public vector2D {
     public:
 
     //non-augmented
     matrix(int, int, std::vector < fraction > );
-    matrix(int, int, std::vector < std::vector < fraction > > );
-    matrix(vector2D);
+    matrix(const std::vector < std::vector < fraction > > & );
+    matrix(const vector2D &);
 
     //augmented
     matrix(int, int, std::vector < fraction > , std::vector < fraction > );
-    matrix(int, int, std::vector < std::vector < fraction > > , std::vector < std::vector < fraction > > );
-    matrix(vector2D, vector2D);
+    matrix( const std::vector < std::vector < fraction > > & , const std::vector < std::vector < fraction > > &);
+    matrix(const vector2D &, const vector2D&);
 
-    void print_collumnspace();
+    void print_columnspace();
     void print_rowspace();
     void print_reduced_form();
 
-    std::string string_collumnspace();
-    std::string string_rowspace();
-    std::string string_reduced_form();
+    std::string string_columnspace() ;
+    std::string string_rowspace()  ;
+    std::string string_reduced_form() ;
 
-    private: vector2D collumnspace;
+    private: 
+    vector2D columnspace;
     vector2D rowspace;
     vector2D reduced_form;
     vector2D vectors;
 
     void row_reduce();
     std::string solution;
+    bool augmented;
 
 };
 
-//NON AUGMENTED
-matrix::matrix(int n, int m, std::vector < fraction > elements) {
-    vector2D(n,m,elements);
-}
+//NON AUGMENTED 1
+matrix::matrix(int n, int m,  std::vector < fraction > elements)
+    :vector2D(n,m,elements){
+        augmented=false;
 
-matrix::matrix(int rows, int cols, std::vector < std::vector < fraction > > vector_of_vectors){
-    vector2D(rows, cols, vector_of_vectors);
+    }
 
-}
+//NON AUGMENTED 2
 
-matrix::matrix(vector2D vector_2D) {
-    number_of_rows = vector_2D.get_number_of_rows();
-    number_of_collumns = vector_2D.get_number_of_columns();
-    set_table(vector_2D.get_table());
-}
-
-//AUGMENTED
-matrix::matrix(vector2D the_matrix, vector2D the_vectors) {
-
-    number_of_rows = the_matrix.get_number_of_rows();
-    number_of_collumns = the_matrix.get_number_of_columns();
-
-    set_table(the_matrix.get_table());
-    the_vectors.flip();
-    vectors.set_table(the_vectors.get_table());
+matrix::matrix(const std::vector < std::vector < fraction > > & vector_of_vectors)
+    :vector2D(vector_of_vectors){
+        augmented=false;
 
 }
+
+//NON AUGMENTED 3
+
+matrix::matrix(const vector2D & vector_2D)
+    :vector2D(vector_2D.get_table()) {
+        augmented=false;
+    
+}
+
+//AUGMENTED  1  
+
+matrix::matrix(int rows, int cols, std::vector<fraction> elements, std::vector<fraction> vector_elements)
+    : vector2D(rows, cols, elements) {
+    
+    if (vector_elements.size() % rows != 0) {
+        exit(5);    }
+    
+    vectors = vector2D(rows, vector_elements.size() / rows, vector_elements); // Initialize vectors after the check
+    augmented=true;
+}
+
+    
+//AUGMENTED 2 
+matrix::matrix(const std::vector < std::vector <fraction > >& vector_of_vectors , const std::vector < std::vector < fraction > >& user_vectors)
+    : vector2D(vector_of_vectors), vectors(user_vectors)
+    {
+        augmented=true;
+    }
+
+// AUGMENTED 3
+matrix::matrix(const vector2D &the_matrix, const vector2D &the_vectors)
+    :vector2D(the_matrix.get_table()), vectors(the_vectors){
+
+        augmented=true;
+    }
+    
+
 
 void matrix::row_reduce() {
-
-        bool augmented = false;
-
-        if (vectors.is_empty()) {
-            augmented = true;
-        }
 
         if (!solution.empty()) {
             return;
@@ -709,24 +752,24 @@ void matrix::row_reduce() {
         int current_row = 0;
         int current_col = 0;
 
-        while (current_row < number_of_rows && current_col < number_of_collumns) {
+        while (current_row < number_of_rows && current_col < number_of_columns) {
 
             //1: ROW SWAP IF CURRENT POSITION IS ZERO
             if (!reduced_form.get_element(current_row, current_col).get_numerator()) {
-                bool no_swap = false;
+                bool no_swap = true;
 
-                //checks the next elements in the collumn until a non zero element is found. Once found, the rows are swapped.
+                //checks the next elements in the column until a non zero element is found. Once found, the rows are swapped.
                 for (int i = current_row + 1; i < number_of_rows; i++) {
                     if (reduced_form.get_element(i, current_col).get_numerator()) {
                         reduced_form.row_swap(current_row, i);
                         if (augmented)
                             vectors.row_swap(current_row, i);
-                        solution += "R" + to_string(current_row) + "<---> R" + to_string(i) + "/n";
-                        no_swap = true;
+                        solution += "R" + to_string(current_row) + "<---> R" + to_string(i) + "\n";
+                        no_swap = false;
                         break;
                     }
                 }
-                //Move to the next collumn
+                //Move to the next column
                 if (no_swap) {
                     current_col++;
                     continue;
@@ -743,24 +786,28 @@ void matrix::row_reduce() {
                 if (augmented) {
                     vectors.divide_row(current_row, division_constant);
                 }
-                solution += "R" + to_string(current_row) + "/" + to_string(division_constant) + "/n";
+                solution += "R" + to_string(current_row) + "/" + to_string(division_constant) + "\n";
             }
 
             //3: ELIMINATE ELEMENTS IN THE COLLUMN BELOW THE PIVOT 
             for (int i = current_row + 1; i < number_of_rows; i++) {
+                if (!reduced_form.get_element(i,current_col)){
+                    continue; //no need to do a row operation
+                }
+                //always divided by 1 tho fix it
                 fraction elimination_constant = (reduced_form.get_element(i, current_col) / reduced_form.get_element(current_row, current_col));
-
+              
                 if (elimination_constant.get_numerator() > 0) {
-                    solution += "R" + to_string(i) + "-" + to_string(elimination_constant) + "R" + to_string(current_row) + "/n";
+                    solution += "R" + to_string(i) + "-" + to_string(elimination_constant) + "R" + to_string(current_row) + "\n";
                 }
 
                 //ensures there are no double negatives in the output
                 if (elimination_constant.get_numerator() < 0) {
-                    solution += "R" + to_string(i) + "+" + to_string(elimination_constant * -1) + "R" + to_string(current_row) + "/n";
+                    solution += "R" + to_string(i) + "+" + to_string(elimination_constant * -1) + "R" + to_string(current_row) + "\n";
                 }
 
                 //adds/subtracts a constant multiple of the current row to each row below to eliminate 
-                for (int j = current_col; j < number_of_collumns; j++) {
+                for (int j = current_col; j < number_of_columns; j++) {
                     fraction new_value = reduced_form.get_element(i, j) - elimination_constant * reduced_form.get_element(current_row, j);
                     reduced_form.set_element(i, j, new_value);
                 }
@@ -774,24 +821,27 @@ void matrix::row_reduce() {
                 }
 
             }
-            solution += "The matrix is now in Echelon Form. /n";
+            solution += "The matrix is now in Echelon Form. \n";
 
-            // The matrix now needs to be reduced on the upper triangle. In each pivot collumn, The elements above a pivot
-            int pivots_left = pivot_positions.size();
+            // The matrix now needs to be reduced on the upper triangle. In each pivot column, The elements above a pivot
+            int pivots_left = pivot_positions.size()-1;
 
             while (pivots_left >= 0) {
                 current_col = pivot_positions.back();
                 current_row = pivots_left;
 
                 for (int i = current_row - 1; i >= 0; i--) {
+                    if (!reduced_form.get_element(i,current_col)){
+                    continue; //no need to do a row operation
+                }
                     fraction elimination_constant = reduced_form.get_element(i, current_col) / reduced_form.get_element(current_row, current_col);
 
                     if (elimination_constant.get_numerator() > 0) {
-                        solution += "R" + to_string(i) + "-" + to_string(elimination_constant) + "R" + to_string(current_row) + "/n";
+                        solution += "R" + to_string(i) + "-" + to_string(elimination_constant) + "R" + to_string(current_row) + "\n";
                     }
 
                     if (elimination_constant.get_numerator() < 0) {
-                        solution += "R" + to_string(i) + "+" + to_string(elimination_constant * -1) + "R" + to_string(current_row) + "/n";
+                        solution += "R" + to_string(i) + "+" + to_string(elimination_constant * -1) + "R" + to_string(current_row) + "\n";
                     }
 
                     for (int j = current_col; j >= 0; j++) {
@@ -812,18 +862,23 @@ void matrix::row_reduce() {
         }
 
             //Extracting the results
-            solution += "The Matrix is in Reduced Row Echelon Form. /n";
-            solution += "-> Number of indendant collumns: " + to_string(pivot_positions.size()) + "/n";
-            solution += "-> Number of dependant collumns: " + to_string(number_of_collumns - pivot_positions.size()) + "/n";
+            solution += "The Matrix is in Reduced Row Echelon Form. \n";
+            solution += "-> Number of indendant columns: " + to_string(pivot_positions.size()) + "\n";
+            solution += "-> Number of dependant columns: " + to_string(number_of_columns - pivot_positions.size()) + "\n";
 
-            //The collumnspace is the set of independant collumns from the original matrix
-            collumnspace.set_table(get_table());
-            collumnspace.keep_columns(pivot_positions);
+            //The columnspace is the set of independant columns from the original matrix
+            columnspace.set_table(get_table());
+            columnspace.keep_columns(pivot_positions);
 
             //The row space is the set of independant rows from the reduced matrix
             rowspace.set_table(reduced_form.get_table());
             rowspace.keep_rows(pivot_positions.size());
 
+            solution += "-> ROWSPACE: \n";
+            solution += string_rowspace();
+
+            solution += solution += "-> COLLUMNSPACE: \n";
+            solution += string_columnspace();
         }
 
         void matrix::print_rowspace() {
@@ -833,11 +888,11 @@ void matrix::row_reduce() {
             }
 
             int rowspace_rows = rowspace.get_number_of_rows();
-            int rowspace_collumns = rowspace.get_number_of_columns();
+            int rowspace_columns = rowspace.get_number_of_columns();
 
             for (int i = 0; i < rowspace_rows; i++) {
                 std::cout << "{ ";
-                for (int j = 0; j < rowspace_collumns; j++) {
+                for (int j = 0; j < rowspace_columns; j++) {
                     std::cout << reduced_form.get_element(i, j);
                     if (i != rowspace_rows - 1)
                         std::cout << ", ";
@@ -852,18 +907,18 @@ void matrix::row_reduce() {
                 row_reduce();
             }
 
-            if (vectors.is_empty()) {
+            if (augmented) {
                 reduced_form.print_table();
             } else {
                 int col1 = 10;
                 std::cout << "┌";
-                for (int k = 0; k < (number_of_collumns + vectors.get_number_of_columns()) * col1; k++) {
+                for (int k = 0; k < (number_of_columns + vectors.get_number_of_columns()) * col1; k++) {
                     std::cout << " ";
                 }
                 std::cout << "┐" << std::endl;
                 for (int i = 0; i < number_of_rows; i++) {
                     std::cout << "|";
-                    for (int j = 0; j < number_of_collumns; j++) {
+                    for (int j = 0; j < number_of_columns; j++) {
                         std::cout << std::setw(col1) << std::left << reduced_form.get_element(i, j);
                     }
                     std::cout << "|";
@@ -874,7 +929,7 @@ void matrix::row_reduce() {
                     std::cout << std::endl;
                 }
                 std::cout << "└";
-                for (int k = 0; k < (number_of_collumns + vectors.get_number_of_columns()) * col1; k++) {
+                for (int k = 0; k < (number_of_columns + vectors.get_number_of_columns()) * col1; k++) {
                     std::cout << " ";
                 }
                 std::cout << "┘" << std::endl;
@@ -882,13 +937,13 @@ void matrix::row_reduce() {
             }
         }
 
-        void matrix::print_collumnspace() {
+        void matrix::print_columnspace() {
             if (solution.empty()) {
                 row_reduce();
             }
 
             int col1 = 10;
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 std::cout << "┌";
                 for (int k = 0; k < col1; k++) {
                     std::cout << " ";
@@ -897,16 +952,16 @@ void matrix::row_reduce() {
                 std::cout << "  ";
             }
 
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 std::cout << "|";
-                for (int j = 0; j < number_of_collumns; j++) {
+                for (int j = 0; j < number_of_columns; j++) {
                     std::cout << std::setw(col1) << std::left << reduced_form.get_element(i, j);
                     std::cout << "|";
                     std::cout << "  ";
                 }
                 std::cout << std::endl;
             }
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 std::cout << "└";
                 for (int k = 0; k < col1; k++) {
                     std::cout << " ";
@@ -918,14 +973,14 @@ void matrix::row_reduce() {
 
         }
 
-        std::string matrix::string_collumnspace() {
+        std::string matrix::string_columnspace() {
             if (solution.empty()) {
                 row_reduce();
             }
 
             std::ostringstream os;
             int col1 = 10;
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 os << "┌";
                 for (int k = 0; k < col1; k++) {
                     os << " ";
@@ -934,16 +989,16 @@ void matrix::row_reduce() {
                 os << "  ";
             }
 
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 os << "|";
-                for (int j = 0; j < number_of_collumns; j++) {
+                for (int j = 0; j < number_of_columns; j++) {
                     os << std::setw(col1) << std::left << reduced_form.get_element(i, j);
                     os << "|";
                     os << "  ";
                 }
                 os << std::endl;
             }
-            for (int i = 0; i < collumnspace.get_number_of_columns(); i++) {
+            for (int i = 0; i < columnspace.get_number_of_columns(); i++) {
                 os << "└";
                 for (int k = 0; k < col1; k++) {
                     os << " ";
@@ -956,20 +1011,20 @@ void matrix::row_reduce() {
 
         }
 
-        std::string matrix::string_rowspace() {
+        std::string matrix::string_rowspace()  {
             if (solution.empty()) {
                 row_reduce();
             }
 
             std::ostringstream oss;
             int rowspace_rows = rowspace.get_number_of_rows();
-            int rowspace_collumns = rowspace.get_number_of_columns();
+            int rowspace_columns = rowspace.get_number_of_columns();
 
             for (int i = 0; i < rowspace_rows; i++) {
                 oss << "{ ";
-                for (int j = 0; j < rowspace_collumns; j++) {
+                for (int j = 0; j < rowspace_columns; j++) {
                     oss << reduced_form.get_element(i, j);
-                    if (j != rowspace_collumns - 1)
+                    if (j != rowspace_columns - 1)
                         oss << ", ";
                 }
                 oss << "}" << std::endl;
@@ -988,20 +1043,20 @@ void matrix::row_reduce() {
             if (vectors.is_empty()) {
                 int col1 = 10;
                 oss << "┌";
-                for (int k = 0; k < number_of_collumns * col1; k++) {
+                for (int k = 0; k < number_of_columns * col1; k++) {
                     oss << " ";
                 }
                 oss << "┐" << std::endl;
                 for (int i = 0; i < number_of_rows; i++) {
                     oss << "|";
-                    for (int j = 0; j < number_of_collumns; j++) {
+                    for (int j = 0; j < number_of_columns; j++) {
                         oss << std::setw(col1) << std::left << reduced_form.get_element(i, j);
                     }
                     oss << "|";
                     oss << std::endl;
                 }
                 oss << "└";
-                for (int k = 0; k < number_of_collumns * col1; k++) {
+                for (int k = 0; k < number_of_columns * col1; k++) {
                     oss << " ";
                 }
                 oss << "┘" << std::endl;
@@ -1010,14 +1065,14 @@ void matrix::row_reduce() {
             } else {
                 int col1 = 10;
                 oss << "┌";
-                for (int k = 0; k < (number_of_collumns + vectors.get_number_of_columns()) * col1; k++) {
+                for (int k = 0; k < (number_of_columns + vectors.get_number_of_columns()) * col1; k++) {
                     oss << " ";
                 }
                 oss << "┐" << std::endl;
 
                 for (int i = 0; i < number_of_rows; i++) {
                     oss << "|";
-                    for (int j = 0; j < number_of_collumns; j++) {
+                    for (int j = 0; j < number_of_columns; j++) {
                         oss << std::setw(col1) << std::left << reduced_form.get_element(i, j);
                     }
                     oss << "|";
@@ -1029,7 +1084,7 @@ void matrix::row_reduce() {
                 }
 
                 oss << "└";
-                for (int k = 0; k < (number_of_collumns + vectors.get_number_of_columns()) * col1; k++) {
+                for (int k = 0; k < (number_of_columns + vectors.get_number_of_columns()) * col1; k++) {
                     oss << " ";
                 }
                 oss << "┘" << std::endl;
@@ -1040,10 +1095,6 @@ void matrix::row_reduce() {
         }
 
     int main(){
-        std::vector <fraction> input= input_vector(5,5);
-        matrix my_matrix(4,4,input);
-
+        std::cout<<"hello";
         return 0;
     }
-
-    
